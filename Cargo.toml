@@ -1,0 +1,13 @@
+[package]
+name = "visio"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.9.0"
+bevy_egui = "0.17.1"
+calamine = "0.19.1"
+chrono = { version = "0.4.22", features = ["serde"] }
+egui_file = "0.2.0"
+rmp-serde = "1.1.1"
+serde = { version = "1.0.147", features = ["derive"] }
