@@ -1,3 +1,4 @@
+pub mod config;
 pub mod data_loader;
 
 pub fn in_delta_f64(val1: f64, val2: f64, d: f64) -> bool {

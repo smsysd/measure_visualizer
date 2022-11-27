@@ -11,3 +11,4 @@ chrono = { version = "0.4.22", features = ["serde"] }
 egui_file = "0.2.0"
 rmp-serde = "1.1.1"
 serde = { version = "1.0.147", features = ["derive"] }
+toml = "0.5.9"

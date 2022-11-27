@@ -1,0 +1,5 @@
+[default_deltas]
+timestamp = 86_400
+photo_deep = 0.5
+temp_deep = 0.8
+flow_deep = 2.0

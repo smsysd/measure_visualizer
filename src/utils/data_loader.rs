@@ -1,9 +1,8 @@
-use std::{fs::{File, OpenOptions}, path::PathBuf, io::{prelude::*, BufReader}};
+use std::{fs::{File, OpenOptions}, path::PathBuf, io::BufReader};
 use bevy::prelude::Resource;
-use chrono::DateTime;
 use rmp_serde as rmps;
 use serde::{Deserialize, Serialize};
-use calamine::{open_workbook, Error, Xlsx, Reader, RangeDeserializerBuilder};
+use calamine::{open_workbook, Xlsx, Reader};
 
 use super::{in_delta_i64, in_delta_f64};
 
@@ -99,6 +98,24 @@ pub struct QueryResult {
 	pub flow: Vec<Flow>	
 }
 
+pub struct Ranges {
+	pub deep_max: f64,
+	pub deep_min: f64,
+	pub timestamp_max: i64,
+	pub timestamp_min: i64
+}
+
+impl Default for Ranges {
+	fn default() -> Self {
+		Self {
+			deep_max: 0.0,
+			deep_min: 0.0,
+			timestamp_max: 0,
+			timestamp_min: 0
+		}
+	}
+}
+
 #[derive(Deserialize, Serialize, Resource)]
 pub struct Data {
 	pub bg: Background,
@@ -180,6 +197,58 @@ impl Data {
 				}
 				data
 			}
+		}
+	}
+
+	pub fn ranges(&self) -> Ranges {
+		let mut dmax = f64::MIN;
+		let mut dmin = f64::MAX;
+		let mut tsmax = i64::MIN;
+		let mut tsmin = i64::MAX;
+		let mut is_deep_exists = false;
+		let mut is_timestamp_exists = false;
+		for p in &self.bg.border {
+			is_deep_exists = true;
+			if p.deep > dmax {dmax = p.deep}
+			if p.deep < dmin {dmin = p.deep}
+		}
+		for p in &self.photo {
+			is_deep_exists = true;
+			is_timestamp_exists = true;
+			if p.point.deep > dmax {dmax = p.point.deep}
+			if p.point.deep < dmin {dmin = p.point.deep}
+			if p.timestamp > tsmax {tsmax = p.timestamp}
+			if p.timestamp < tsmin {tsmin = p.timestamp}
+		}
+		for p in &self.temp {
+			is_deep_exists = true;
+			is_timestamp_exists = true;
+			if p.point.deep > dmax {dmax = p.point.deep}
+			if p.point.deep < dmin {dmin = p.point.deep}
+			if p.timestamp > tsmax {tsmax = p.timestamp}
+			if p.timestamp < tsmin {tsmin = p.timestamp}
+		}
+		for p in &self.flow {
+			is_deep_exists = true;
+			is_timestamp_exists = true;
+			if p.point.deep > dmax {dmax = p.point.deep}
+			if p.point.deep < dmin {dmin = p.point.deep}
+			if p.timestamp > tsmax {tsmax = p.timestamp}
+			if p.timestamp < tsmin {tsmin = p.timestamp}
+		}
+		if !is_deep_exists {
+			dmax = 0.0;
+			dmin = 0.0;
+		}
+		if !is_timestamp_exists {
+			tsmax = 0;
+			tsmin = 0;
+		}
+		Ranges {
+			deep_max: dmax,
+			deep_min: dmin,
+			timestamp_max: tsmax,
+			timestamp_min: tsmin
 		}
 	}
 }

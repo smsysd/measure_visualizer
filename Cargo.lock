@@ -3415,6 +3415,7 @@ dependencies = [
  "egui_file",
  "rmp-serde",
  "serde",
+ "toml",
 ]
 
 [[package]]
